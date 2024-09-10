@@ -27,33 +27,35 @@ public class TCPClient {
         try {
             DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
 
-
             String fileName = dataInputStream.readUTF();
 
             if(fileName.equals("END_OF_FILES")){
                 return false; // No more files to read
             }
 
+            //Create path- & output stream to the file.
             String filePath = saveDir + File.separator + fileName;
+            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
+
+
+            //We use the filesize to know when to separate files
             long fileSize = dataInputStream.readLong();
-
-
-            FileOutputStream fos = new FileOutputStream(filePath);
-            BufferedOutputStream bos = new BufferedOutputStream(fos);
-
-            byte[] byteArray = new byte[1024];
-            int bytesRead;
             long bytesRemaining = fileSize;
 
-            // Read data from server until end of stream
-            while ((bytesRead = dataInputStream.read(byteArray, 0, (int) Math.min(byteArray.length, bytesRemaining))) != -1) {
-                bos.write(byteArray, 0, bytesRead);
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+
+            //Read data from server until end of stream. DataInputStream.read returns -1 when there is no more data to read.
+            while ((bytesRead = dataInputStream.read(buffer, 0, (int) Math.min(buffer.length, bytesRemaining))) != -1) {
+                //Write the data from the inputstream to the file
+                bos.write(buffer, 0, bytesRead);
+                //Calculate when the file is fully read.
                 bytesRemaining -= bytesRead;
                 if (bytesRemaining <= 0) {
                     break;
                 }
             }
-            
+
             bos.flush();
             bos.close();
 

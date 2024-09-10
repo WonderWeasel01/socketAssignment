@@ -15,10 +15,12 @@ public class TCPServer {
             Socket socket = serverSocket.accept();
             System.out.println("New client connected");
 
+            //Get the folder that we're sending files from
             File folder = new File(folderPath);
+            //Store all files in the folder as a list
             List<File> files = getFilesInFolder(folder);
 
-            // Send each file
+            // Send each file to the client
             for (File file : files) {
                 sendFile(socket, file);
             }
@@ -50,7 +52,6 @@ public class TCPServer {
 
     private static void sendFile(Socket socket, File file) {
         try {
-
             DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
 
             //Send file data to differentiate between files
@@ -60,12 +61,14 @@ public class TCPServer {
             dataOutputStream.writeLong(fileSize);
             dataOutputStream.flush();
 
+            //Create an inputstream to the file that we're sending, so we can read the data we want to send.
             BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(file));
-            OutputStream outputStream = socket.getOutputStream();
+            //Get the outputstream, so we can send the data to the socket.
+            BufferedOutputStream outputStream = new BufferedOutputStream(socket.getOutputStream());
 
             byte[] buffer = new byte[1024];
             int bytesRead;
-
+            //bufferedinputstream.read returns -1 if there's no more data to be read.
             while ((bytesRead = bufferedInputStream.read(buffer)) != -1) {
                 outputStream.write(buffer, 0, bytesRead);
             }
