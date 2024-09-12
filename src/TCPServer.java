@@ -34,10 +34,12 @@ public class TCPServer {
 
         } catch (IOException ex) {
             ex.printStackTrace();
+        } catch (Exception e){
+            System.out.println(e.getMessage());
         }
     }
 
-    private static List<File> getFilesInFolder(File folder) {
+    private static List<File> getFilesInFolder(File folder) throws Exception{
         File[] files = folder.listFiles();
         List<File> fileList = new ArrayList<>();
         if (files != null) {
@@ -46,7 +48,7 @@ public class TCPServer {
                     fileList.add(file);
                 }
             }
-        }
+        } else throw new Exception("Folder is empty");
         return fileList;
     }
 

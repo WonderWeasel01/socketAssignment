@@ -3,7 +3,7 @@ import java.net.*;
 
 public class TCPClient {
     public static void main(String[] args) {
-        String serverAddress = "192.168.0.101"; // Change to server IP if needed
+        String serverAddress = "localhost"; // Change to server IP if needed
         int port = 5000;
         int fileCounter = 0;
 
